@@ -15,7 +15,7 @@ Chrome extension that turns `youtube.com` into a focused search screen and hides
 - The `youtube.com` home page becomes a centered search screen.
 - Searches go to YouTube's normal results page.
 - Search results remain usable.
-- Recommendation surfaces such as the home feed, Shorts shelves, related videos, compact recommendations, and end-screen recommendations are hidden.
+- Recommendation surfaces such as the home feed, Shorts shelves, related videos, compact recommendations, comments, and end-screen recommendations are hidden.
 - Click the Chrome toolbar icon to turn Focus Search on or off.
 
 ## Security And Privacy

@@ -1,6 +1,7 @@
 (() => {
   const OVERLAY_ID = "yt-focus-search-overlay";
   const DEFAULT_ENABLED = true;
+  const APPLY_DELAY_MS = 150;
   const RECOMMENDATION_SELECTORS = [
     "ytd-watch-next-secondary-results-renderer",
     "ytd-watch-flexy #secondary",
@@ -71,12 +72,16 @@
     hideRecommendations();
   };
 
-  const scheduleApply = () => {
+  const scheduleApply = ({ force = false } = {}) => {
+    if (!isEnabled && !force) {
+      return;
+    }
+
     if (pendingApply) {
       return;
     }
 
-    pendingApply = window.setTimeout(applyMode, 50);
+    pendingApply = window.setTimeout(applyMode, APPLY_DELAY_MS);
   };
 
   const hideRecommendations = () => {
@@ -573,7 +578,12 @@
       }
 
       isEnabled = changes.enabled.newValue !== false;
-      scheduleApply();
+
+      if (isEnabled) {
+        scheduleApply({ force: true });
+      } else {
+        cleanupMode();
+      }
     });
   };
 
