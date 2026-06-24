@@ -10,7 +10,7 @@ Turn youtube.com into a focused search screen and hide recommendation surfaces.
 
 ## Detailed Description
 
-Focus Search helps you use youtube.com intentionally. It replaces the home feed with a simple search-first screen and hides recommendation surfaces such as the home feed, related videos, compact recommendations, Shorts shelves, and end-screen suggestions.
+Focus Search helps you use youtube.com intentionally. It replaces the home feed with a simple search-first screen and hides recommendation surfaces such as the home feed, related videos, compact recommendations, Shorts shelves, comments, and end-screen suggestions.
 
 The extension can be toggled on or off from the Chrome toolbar icon. When off, pages return to their normal behavior.
 
@@ -41,8 +41,8 @@ Productivity
 
 ## Support URL
 
-https://github.com/Soynyuu/focus-search-extension/issues
+Leave blank if optional. Do not use a personal GitHub profile or repository URL unless the publisher identity has been reviewed.
 
 ## Homepage
 
-https://github.com/Soynyuu/focus-search-extension
+Leave blank if optional. Do not use a personal GitHub profile or repository URL unless the publisher identity has been reviewed.
