@@ -10,6 +10,8 @@ Please open a GitHub issue with a clear description of the issue, affected files
 
 ## Privacy Model
 
-Focus Search does not collect, store, transmit, or analyze user data.
+Focus Search does not collect, transmit, sell, or analyze user data.
 
-The extension has no background worker, no storage permission, and no external network requests. It only runs a content script on YouTube pages and redirects search submissions to YouTube's normal search results URL.
+The extension stores only one local setting: whether Focus Search is on or off. This setting is saved with `chrome.storage.local` and never leaves the user's browser.
+
+The extension has no external network requests. It uses a Manifest V3 service worker only to handle the toolbar on/off toggle. It only runs a content script on YouTube pages and redirects search submissions to YouTube's normal search results URL.

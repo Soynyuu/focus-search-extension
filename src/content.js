@@ -1,5 +1,6 @@
 (() => {
   const OVERLAY_ID = "yt-focus-search-overlay";
+  const DEFAULT_ENABLED = true;
   const RECOMMENDATION_SELECTORS = [
     "ytd-watch-next-secondary-results-renderer",
     "ytd-watch-flexy #secondary",
@@ -21,6 +22,7 @@
 
   let lastUrl = "";
   let pendingApply = 0;
+  let isEnabled = DEFAULT_ENABLED;
 
   const isHomePath = () => {
     const path = window.location.pathname;
@@ -31,6 +33,11 @@
 
   const applyMode = () => {
     pendingApply = 0;
+    if (!isEnabled) {
+      cleanupMode();
+      return;
+    }
+
     const root = document.documentElement;
     const shouldShowHome = isHomePath();
 
@@ -72,13 +79,39 @@
   };
 
   const hideNode = (node) => {
+    node.dataset.ytfsHidden = "true";
+
     if (!node.hasAttribute("hidden")) {
+      node.dataset.ytfsAddedHidden = "true";
       node.setAttribute("hidden", "true");
     }
 
     if (node.getAttribute("aria-hidden") !== "true") {
+      node.dataset.ytfsAddedAriaHidden = "true";
       node.setAttribute("aria-hidden", "true");
     }
+  };
+
+  const restoreHiddenNodes = () => {
+    document.querySelectorAll("[data-ytfs-hidden='true']").forEach((node) => {
+      if (node.dataset.ytfsAddedHidden === "true") {
+        node.removeAttribute("hidden");
+      }
+
+      if (node.dataset.ytfsAddedAriaHidden === "true") {
+        node.removeAttribute("aria-hidden");
+      }
+
+      delete node.dataset.ytfsHidden;
+      delete node.dataset.ytfsAddedHidden;
+      delete node.dataset.ytfsAddedAriaHidden;
+    });
+  };
+
+  const cleanupMode = () => {
+    document.documentElement.classList.remove("ytfs-focus-home", "ytfs-recommendations-hidden");
+    removeOverlay();
+    restoreHiddenNodes();
   };
 
   const ensureOverlay = () => {
@@ -441,16 +474,39 @@
     scheduleApply();
   };
 
-  patchHistory();
-  window.addEventListener("ytfs-locationchange", observeUrl);
-  window.addEventListener("popstate", observeUrl);
-  window.addEventListener("yt-navigate-finish", scheduleApply);
+  const loadEnabledState = () => {
+    chrome.storage.local.get({ enabled: DEFAULT_ENABLED }, (result) => {
+      isEnabled = result.enabled !== false;
+      scheduleApply();
+    });
+  };
 
-  new MutationObserver(scheduleApply).observe(document.documentElement, {
-    childList: true,
-    subtree: true
-  });
+  const watchEnabledState = () => {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== "local" || !changes.enabled) {
+        return;
+      }
 
-  observeUrl();
-  scheduleApply();
+      isEnabled = changes.enabled.newValue !== false;
+      scheduleApply();
+    });
+  };
+
+  const start = () => {
+    patchHistory();
+    watchEnabledState();
+    window.addEventListener("ytfs-locationchange", observeUrl);
+    window.addEventListener("popstate", observeUrl);
+    window.addEventListener("yt-navigate-finish", scheduleApply);
+
+    new MutationObserver(scheduleApply).observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+
+    loadEnabledState();
+    observeUrl();
+  };
+
+  start();
 })();
