@@ -39,6 +39,10 @@ Reduce distraction on youtube.com by replacing recommendation-heavy surfaces wit
 
 Productivity
 
+## Search Tags (for listing form)
+
+focus, productivity, youtube, distraction blocker, digital minimalism, deep work, no recommendations, shorts blocker, manifest v3, privacy
+
 ## Support URL
 
 Leave blank if optional. Do not use a personal GitHub profile or repository URL unless the publisher identity has been reviewed.

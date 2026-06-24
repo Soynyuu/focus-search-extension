@@ -36,6 +36,21 @@ Chrome extension that turns `youtube.com` into a focused search screen and hides
 - Build package: `scripts/build_store_package.sh`
 - Upload package: `dist/focus-search-1.0.0.zip`
 
+## Suggested GitHub Topics
+
+Add these repository topics on GitHub for better discovery:
+
+- `chrome-extension`
+- `youtube`
+- `productivity`
+- `focus`
+- `digital-minimalism`
+- `distraction-free`
+- `manifest-v3`
+- `privacy`
+- `javascript`
+- `open-source`
+
 ## Trademark Notice
 
 This project is not affiliated with, endorsed by, or sponsored by YouTube or Google. YouTube is a trademark of Google LLC.
