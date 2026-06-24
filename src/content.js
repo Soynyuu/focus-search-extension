@@ -19,6 +19,19 @@
     ".ytp-endscreen-content",
     ".ytp-ce-element"
   ];
+  const SEARCH_RECOMMENDATION_SELECTORS = [
+    "ytd-reel-shelf-renderer",
+    "ytd-reel-item-renderer",
+    "ytd-reel-video-renderer",
+    "ytd-rich-section-renderer",
+    "ytd-shelf-renderer[is-shorts]",
+    "ytd-shelf-renderer:has(a[href*='/shorts/'])",
+    "ytd-video-renderer[is-shorts]",
+    "ytd-video-renderer:has(a[href*='/shorts/'])",
+    "ytd-item-section-renderer:has(ytd-reel-shelf-renderer)",
+    "yt-horizontal-list-renderer:has(a[href*='/shorts/'])",
+    "yt-lockup-view-model:has(a[href*='/shorts/'])"
+  ];
 
   let lastUrl = "";
   let pendingApply = 0;
@@ -73,9 +86,73 @@
   };
 
   const hideSearchRecommendationsOnly = () => {
-    document
-      .querySelectorAll("ytd-reel-shelf-renderer, ytd-rich-section-renderer, ytd-shelf-renderer[is-shorts]")
-      .forEach(hideNode);
+    for (const selector of SEARCH_RECOMMENDATION_SELECTORS) {
+      document.querySelectorAll(selector).forEach(hideNode);
+    }
+
+    hideSearchShortsShelves();
+  };
+
+  const hideSearchShortsShelves = () => {
+    const shortsLinks = document.querySelectorAll('a[href*="/shorts/"]');
+
+    shortsLinks.forEach((link) => {
+      const shelf = findShortsShelf(link);
+
+      if (shelf) {
+        hideNode(shelf);
+      }
+    });
+
+    document.querySelectorAll("h2, h3").forEach((heading) => {
+      if (!isShortsLabel(heading.textContent)) {
+        return;
+      }
+
+      const shelf = findShortsShelf(heading);
+
+      if (shelf) {
+        hideNode(shelf);
+      }
+    });
+  };
+
+  const findShortsShelf = (sourceNode) => {
+    let node = sourceNode.parentElement;
+
+    while (node && node !== document.body) {
+      const shortsLinkCount = node.querySelectorAll?.('a[href*="/shorts/"]').length ?? 0;
+      const text = node.textContent ?? "";
+      const looksLikeShortsShelf =
+        shortsLinkCount >= 2 &&
+        isShortsLabel(text);
+
+      if (looksLikeShortsShelf && isReasonableShelfSize(node)) {
+        return node;
+      }
+
+      node = node.parentElement;
+    }
+
+    return sourceNode.closest(
+      [
+        "ytd-reel-item-renderer",
+        "ytd-reel-video-renderer",
+        "ytd-video-renderer",
+        "ytd-rich-item-renderer",
+        "yt-lockup-view-model"
+      ].join(", ")
+    );
+  };
+
+  const isShortsLabel = (text) => {
+    const normalizedText = (text ?? "").trim().toLowerCase();
+    return normalizedText.includes("ショート") || normalizedText.includes("shorts");
+  };
+
+  const isReasonableShelfSize = (node) => {
+    const rect = node.getBoundingClientRect();
+    return rect.width >= 240 && rect.height >= 80 && rect.height <= Math.max(900, window.innerHeight * 1.4);
   };
 
   const hideNode = (node) => {
@@ -165,20 +242,21 @@
         }
 
         .panel {
-          width: min(720px, 100%);
+          width: min(860px, 100%);
           display: grid;
-          gap: 26px;
+          gap: 30px;
           justify-items: center;
-          transform: translateY(-5vh);
+          transform: translateY(-6vh);
         }
 
         .identity {
-          display: flex;
+          display: grid;
           align-items: center;
           justify-content: center;
-          gap: 10px;
+          gap: 12px;
           padding: 0;
           color: var(--ytfs-text);
+          text-align: center;
         }
 
         .product {
@@ -187,16 +265,16 @@
           gap: 8px;
           color: var(--ytfs-text);
           margin: 0;
-          font-size: 28px;
+          font-size: 38px;
           line-height: 1;
-          font-weight: 700;
+          font-weight: 650;
           letter-spacing: 0;
         }
 
         .mode {
           margin: 0;
           color: var(--ytfs-muted);
-          font-size: 14px;
+          font-size: 15px;
           line-height: 1.35;
           font-weight: 400;
           letter-spacing: 0;
@@ -207,12 +285,12 @@
           display: flex;
           align-items: center;
           gap: 0;
-          min-height: 48px;
+          min-height: 58px;
           padding: 0;
-          border: 1px solid var(--ytfs-border-strong);
-          border-radius: 24px;
+          border: 1px solid var(--ytfs-border);
+          border-radius: 29px;
           background: var(--ytfs-surface);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.05);
           box-sizing: border-box;
           overflow: hidden;
           transition: border-color 120ms ease, box-shadow 120ms ease;
@@ -225,9 +303,9 @@
 
         .search-icon {
           flex: 0 0 auto;
-          width: 48px;
-          height: 48px;
-          display: none;
+          width: 58px;
+          height: 58px;
+          display: grid;
           place-items: center;
           color: var(--ytfs-muted);
         }
@@ -246,15 +324,15 @@
         input {
           min-width: 0;
           flex: 1;
-          height: 48px;
+          height: 58px;
           border: 0;
           outline: 0;
-          padding: 0 18px 0 20px;
+          padding: 0 18px 0 0;
           border-radius: 0;
           background: transparent;
           color: var(--ytfs-text);
           font: inherit;
-          font-size: 18px;
+          font-size: 20px;
           line-height: 1.2;
           font-weight: 400;
         }
@@ -266,8 +344,8 @@
 
         button {
           flex: 0 0 auto;
-          height: 48px;
-          width: 74px;
+          height: 58px;
+          width: 86px;
           display: grid;
           place-items: center;
           border: 0;
@@ -330,7 +408,7 @@
           form {
             border-color: var(--ytfs-border-strong);
             background: var(--ytfs-surface);
-            box-shadow: none;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
           }
 
           form:focus-within {
@@ -370,7 +448,7 @@
           }
 
           .panel {
-            gap: 20px;
+            gap: 22px;
             transform: translateY(-3vh);
           }
 
@@ -386,7 +464,7 @@
 
           input {
             height: 46px;
-            padding-left: 16px;
+            padding-left: 0;
             font-size: 16px;
           }
 
@@ -440,6 +518,8 @@
         return;
       }
 
+      document.documentElement.classList.remove("ytfs-focus-home");
+      removeOverlay();
       window.location.assign(`/results?search_query=${encodeURIComponent(query)}`);
     });
 
