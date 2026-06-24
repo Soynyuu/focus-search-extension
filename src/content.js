@@ -15,6 +15,11 @@
     "ytd-compact-playlist-renderer",
     "ytd-item-section-renderer[section-identifier='related-items']",
     "ytd-merch-shelf-renderer",
+    "#comments",
+    "ytd-comments",
+    "ytd-comments-header-renderer",
+    "ytd-comment-thread-renderer",
+    "ytd-comment-simplebox-renderer",
     "ytd-endscreen",
     ".ytp-endscreen-content",
     ".ytp-ce-element"
