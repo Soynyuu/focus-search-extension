@@ -1,0 +1,479 @@
+(() => {
+  const OVERLAY_ID = "yt-focus-search-overlay";
+  const RECOMMENDATION_SELECTORS = [
+    "ytd-watch-next-secondary-results-renderer",
+    "ytd-watch-flexy #secondary",
+    "ytd-rich-grid-renderer",
+    "ytd-rich-section-renderer",
+    "ytd-reel-shelf-renderer",
+    "ytd-horizontal-card-list-renderer",
+    "ytd-shelf-renderer[is-shorts]",
+    "ytd-video-renderer[is-shorts]",
+    "ytd-compact-video-renderer",
+    "ytd-compact-radio-renderer",
+    "ytd-compact-playlist-renderer",
+    "ytd-item-section-renderer[section-identifier='related-items']",
+    "ytd-merch-shelf-renderer",
+    "ytd-endscreen",
+    ".ytp-endscreen-content",
+    ".ytp-ce-element"
+  ];
+
+  let lastUrl = "";
+  let pendingApply = 0;
+
+  const isHomePath = () => {
+    const path = window.location.pathname;
+    return path === "/" || path === "";
+  };
+
+  const isSearchPath = () => window.location.pathname === "/results";
+
+  const applyMode = () => {
+    pendingApply = 0;
+    const root = document.documentElement;
+    const shouldShowHome = isHomePath();
+
+    root.classList.toggle("ytfs-focus-home", shouldShowHome);
+    root.classList.add("ytfs-recommendations-hidden");
+
+    if (shouldShowHome) {
+      ensureOverlay();
+    } else {
+      removeOverlay();
+    }
+
+    hideRecommendations();
+  };
+
+  const scheduleApply = () => {
+    if (pendingApply) {
+      return;
+    }
+
+    pendingApply = window.setTimeout(applyMode, 50);
+  };
+
+  const hideRecommendations = () => {
+    if (isSearchPath()) {
+      hideSearchRecommendationsOnly();
+      return;
+    }
+
+    for (const selector of RECOMMENDATION_SELECTORS) {
+      document.querySelectorAll(selector).forEach(hideNode);
+    }
+  };
+
+  const hideSearchRecommendationsOnly = () => {
+    document
+      .querySelectorAll("ytd-reel-shelf-renderer, ytd-rich-section-renderer, ytd-shelf-renderer[is-shorts]")
+      .forEach(hideNode);
+  };
+
+  const hideNode = (node) => {
+    if (!node.hasAttribute("hidden")) {
+      node.setAttribute("hidden", "true");
+    }
+
+    if (node.getAttribute("aria-hidden") !== "true") {
+      node.setAttribute("aria-hidden", "true");
+    }
+  };
+
+  const ensureOverlay = () => {
+    if (document.getElementById(OVERLAY_ID)) {
+      return;
+    }
+
+    const host = document.createElement("div");
+    host.id = OVERLAY_ID;
+    const shadow = host.attachShadow({ mode: "open" });
+    shadow.appendChild(buildOverlay());
+    document.documentElement.appendChild(host);
+
+    const input = shadow.querySelector("input");
+    window.setTimeout(() => input?.focus(), 120);
+  };
+
+  const removeOverlay = () => {
+    document.getElementById(OVERLAY_ID)?.remove();
+  };
+
+  const buildOverlay = () => {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+      <style>
+        :host {
+          position: fixed;
+          inset: 0;
+          z-index: 2147483647;
+          color-scheme: light dark;
+          --ytfs-background: #ffffff;
+          --ytfs-surface: #ffffff;
+          --ytfs-surface-subtle: #f8f8f8;
+          --ytfs-text: #0f0f0f;
+          --ytfs-muted: #606060;
+          --ytfs-border: #d9d9d9;
+          --ytfs-border-strong: #c6c6c6;
+          --ytfs-button: #f8f8f8;
+          --ytfs-button-hover: #f0f0f0;
+          --ytfs-youtube-red: #ff0000;
+          font-family: Roboto, Arial, sans-serif;
+        }
+
+        .screen {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 32px 24px;
+          box-sizing: border-box;
+          background: var(--ytfs-background);
+        }
+
+        .panel {
+          width: min(720px, 100%);
+          display: grid;
+          gap: 26px;
+          justify-items: center;
+          transform: translateY(-5vh);
+        }
+
+        .identity {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 0;
+          color: var(--ytfs-text);
+        }
+
+        .product {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          color: var(--ytfs-text);
+          margin: 0;
+          font-size: 28px;
+          line-height: 1;
+          font-weight: 700;
+          letter-spacing: 0;
+        }
+
+        .play-mark {
+          width: 38px;
+          height: 27px;
+          display: grid;
+          place-items: center;
+          border-radius: 8px;
+          background: var(--ytfs-youtube-red);
+          color: #ffffff;
+        }
+
+        .play-mark svg {
+          width: 17px;
+          height: 17px;
+          fill: currentColor;
+          transform: translateX(1px);
+        }
+
+        .mode {
+          margin: 0;
+          color: var(--ytfs-muted);
+          font-size: 14px;
+          line-height: 1.35;
+          font-weight: 400;
+          letter-spacing: 0;
+        }
+
+        form {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 0;
+          min-height: 48px;
+          padding: 0;
+          border: 1px solid var(--ytfs-border-strong);
+          border-radius: 24px;
+          background: var(--ytfs-surface);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+          box-sizing: border-box;
+          overflow: hidden;
+          transition: border-color 120ms ease, box-shadow 120ms ease;
+        }
+
+        form:focus-within {
+          border-color: #1c62b9;
+          box-shadow: 0 0 0 1px #1c62b9;
+        }
+
+        .search-icon {
+          flex: 0 0 auto;
+          width: 48px;
+          height: 48px;
+          display: none;
+          place-items: center;
+          color: var(--ytfs-muted);
+        }
+
+        .search-icon svg {
+          display: block;
+          width: 20px;
+          height: 20px;
+          stroke: currentColor;
+          stroke-width: 2;
+          fill: none;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        input {
+          min-width: 0;
+          flex: 1;
+          height: 48px;
+          border: 0;
+          outline: 0;
+          padding: 0 18px 0 20px;
+          border-radius: 0;
+          background: transparent;
+          color: var(--ytfs-text);
+          font: inherit;
+          font-size: 18px;
+          line-height: 1.2;
+          font-weight: 400;
+        }
+
+        input::placeholder {
+          color: #909090;
+          opacity: 1;
+        }
+
+        button {
+          flex: 0 0 auto;
+          height: 48px;
+          width: 74px;
+          display: grid;
+          place-items: center;
+          border: 0;
+          border-left: 1px solid var(--ytfs-border);
+          border-radius: 0;
+          background: var(--ytfs-button);
+          color: #0f0f0f;
+          cursor: pointer;
+          transition: background 120ms ease;
+        }
+
+        button:hover {
+          background: var(--ytfs-button-hover);
+        }
+
+        button:active {
+          background: #e9e9e9;
+        }
+
+        button:focus-visible {
+          outline: 2px solid #1c62b9;
+          outline-offset: -3px;
+        }
+
+        button svg {
+          width: 22px;
+          height: 22px;
+          stroke: currentColor;
+          stroke-width: 2;
+          fill: none;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          :host {
+            --ytfs-background: #0f0f0f;
+            --ytfs-surface: #121212;
+            --ytfs-surface-subtle: #181818;
+            --ytfs-text: #f1f1f1;
+            --ytfs-muted: #aaa;
+            --ytfs-border: #303030;
+            --ytfs-border-strong: #303030;
+            --ytfs-button: #222222;
+            --ytfs-button-hover: #303030;
+          }
+
+          .screen {
+            background: var(--ytfs-background);
+          }
+
+          .identity {
+            color: var(--ytfs-text);
+          }
+
+          .mode {
+            color: var(--ytfs-muted);
+          }
+
+          form {
+            border-color: var(--ytfs-border-strong);
+            background: var(--ytfs-surface);
+            box-shadow: none;
+          }
+
+          form:focus-within {
+            border-color: #3ea6ff;
+            box-shadow: 0 0 0 1px #3ea6ff;
+          }
+
+          .search-icon {
+            color: var(--ytfs-muted);
+          }
+
+          input {
+            color: var(--ytfs-text);
+          }
+
+          input::placeholder {
+            color: #888;
+          }
+
+          button {
+            background: var(--ytfs-button);
+            color: var(--ytfs-text);
+          }
+
+          button:hover {
+            background: var(--ytfs-button-hover);
+          }
+
+          button:focus-visible {
+            outline-color: #3ea6ff;
+          }
+        }
+
+        @media (max-width: 520px) {
+          .screen {
+            padding: 24px 18px;
+          }
+
+          .panel {
+            gap: 20px;
+            transform: translateY(-3vh);
+          }
+
+          .identity {
+            flex-direction: column;
+            gap: 10px;
+          }
+
+          form {
+            min-height: 46px;
+            border-radius: 23px;
+          }
+
+          input {
+            height: 46px;
+            padding-left: 16px;
+            font-size: 16px;
+          }
+
+          button {
+            width: 58px;
+            height: 46px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          form,
+          button {
+            transition: none;
+          }
+        }
+      </style>
+      <main class="screen" aria-label="Focused YouTube search">
+        <section class="panel">
+          <header class="identity">
+            <h1 class="product">
+              <span class="play-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+              </span>
+              YouTube
+            </h1>
+            <p class="mode">Focus Search</p>
+          </header>
+          <form>
+            <span class="search-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-4.4-4.4"></path>
+              </svg>
+            </span>
+            <input type="search" autocomplete="off" spellcheck="false" placeholder="Search YouTube" aria-label="Search YouTube" />
+            <button type="submit" aria-label="Search">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </button>
+          </form>
+        </section>
+      </main>
+    `;
+
+    wrapper.querySelector("form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const input = wrapper.querySelector("input");
+      const query = input.value.trim();
+
+      if (!query) {
+        input.focus();
+        return;
+      }
+
+      window.location.assign(`/results?search_query=${encodeURIComponent(query)}`);
+    });
+
+    return wrapper;
+  };
+
+  const patchHistory = () => {
+    for (const methodName of ["pushState", "replaceState"]) {
+      const original = history[methodName];
+      if (original.__ytfsPatched) {
+        continue;
+      }
+
+      const patched = function patchedHistoryMethod(...args) {
+        const result = original.apply(this, args);
+        window.dispatchEvent(new Event("ytfs-locationchange"));
+        return result;
+      };
+
+      patched.__ytfsPatched = true;
+      history[methodName] = patched;
+    }
+  };
+
+  const observeUrl = () => {
+    const currentUrl = window.location.href;
+    if (currentUrl === lastUrl) {
+      return;
+    }
+
+    lastUrl = currentUrl;
+    scheduleApply();
+  };
+
+  patchHistory();
+  window.addEventListener("ytfs-locationchange", observeUrl);
+  window.addEventListener("popstate", observeUrl);
+  window.addEventListener("yt-navigate-finish", scheduleApply);
+
+  new MutationObserver(scheduleApply).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+
+  observeUrl();
+  scheduleApply();
+})();

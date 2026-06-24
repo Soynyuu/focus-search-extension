@@ -1,0 +1,47 @@
+html.ytfs-focus-home,
+html.ytfs-focus-home body {
+  overflow: hidden !important;
+}
+
+html.ytfs-focus-home ytd-browse[page-subtype="home"],
+html.ytfs-focus-home ytd-rich-grid-renderer,
+html.ytfs-focus-home ytd-two-column-browse-results-renderer,
+html.ytfs-focus-home ytd-feed-filter-chip-bar-renderer,
+html.ytfs-focus-home ytd-mini-guide-renderer,
+html.ytfs-focus-home ytd-guide-renderer,
+html.ytfs-focus-home #guide,
+html.ytfs-focus-home #chips,
+html.ytfs-focus-home #contents.ytd-rich-grid-renderer,
+html.ytfs-focus-home #page-manager > ytd-browse {
+  visibility: hidden !important;
+}
+
+html.ytfs-focus-home ytd-masthead,
+html.ytfs-focus-home #masthead-container {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html.ytfs-recommendations-hidden ytd-watch-next-secondary-results-renderer,
+html.ytfs-recommendations-hidden ytd-watch-flexy #secondary,
+html.ytfs-recommendations-hidden ytd-watch-flexy #secondary-inner,
+html.ytfs-recommendations-hidden ytd-rich-grid-renderer,
+html.ytfs-recommendations-hidden ytd-rich-section-renderer,
+html.ytfs-recommendations-hidden ytd-reel-shelf-renderer,
+html.ytfs-recommendations-hidden ytd-horizontal-card-list-renderer,
+html.ytfs-recommendations-hidden ytd-shelf-renderer[is-shorts],
+html.ytfs-recommendations-hidden ytd-video-renderer[is-shorts],
+html.ytfs-recommendations-hidden ytd-compact-video-renderer,
+html.ytfs-recommendations-hidden ytd-compact-radio-renderer,
+html.ytfs-recommendations-hidden ytd-compact-playlist-renderer,
+html.ytfs-recommendations-hidden ytd-item-section-renderer[section-identifier="related-items"],
+html.ytfs-recommendations-hidden ytd-merch-shelf-renderer,
+html.ytfs-recommendations-hidden ytd-endscreen,
+html.ytfs-recommendations-hidden .ytp-endscreen-content,
+html.ytfs-recommendations-hidden .ytp-ce-element {
+  display: none !important;
+}
+
+html.ytfs-recommendations-hidden ytd-watch-flexy[flexy] #primary.ytd-watch-flexy {
+  max-width: 1180px !important;
+}
