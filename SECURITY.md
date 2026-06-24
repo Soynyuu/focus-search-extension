@@ -10,6 +10,6 @@ Please open a GitHub issue with a clear description of the issue, affected files
 
 ## Privacy Model
 
-YouTube Focus Search does not collect, store, transmit, or analyze user data.
+Focus Search does not collect, store, transmit, or analyze user data.
 
 The extension has no background worker, no storage permission, and no external network requests. It only runs a content script on YouTube pages and redirects search submissions to YouTube's normal search results URL.

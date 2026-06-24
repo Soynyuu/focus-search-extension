@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Focus Search",
-  "description": "Turns the YouTube home page into a focused YouTube-style search screen and hides recommendation surfaces.",
+  "name": "Focus Search",
+  "description": "Turns youtube.com into a focused search screen and hides recommendation surfaces.",
   "version": "0.1.0",
   "content_scripts": [
     {

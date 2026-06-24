@@ -1,6 +1,6 @@
-# YouTube Focus Search
+# Focus Search
 
-Chrome extension that turns the YouTube home page into a focused YouTube-style search screen and hides recommendation surfaces across YouTube.
+Chrome extension that turns `youtube.com` into a focused search screen and hides recommendation surfaces.
 
 ## Load In Chrome
 
@@ -12,7 +12,7 @@ Chrome extension that turns the YouTube home page into a focused YouTube-style s
 
 ## Behavior
 
-- The YouTube home page becomes a centered, YouTube-style search screen.
+- The `youtube.com` home page becomes a centered search screen.
 - Searches go to YouTube's normal results page.
 - Search results remain usable.
 - Recommendation surfaces such as the home feed, Shorts shelves, related videos, compact recommendations, and end-screen recommendations are hidden.
@@ -27,6 +27,10 @@ Chrome extension that turns the YouTube home page into a focused YouTube-style s
 - No access to non-YouTube pages.
 - The extension only injects CSS and a content script on `youtube.com`.
 - Search terms are sent only to YouTube's normal `/results?search_query=` URL.
+
+## Trademark Notice
+
+This project is not affiliated with, endorsed by, or sponsored by YouTube or Google. YouTube is a trademark of Google LLC.
 
 ## License
 

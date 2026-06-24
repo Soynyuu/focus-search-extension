@@ -118,7 +118,6 @@
           --ytfs-border-strong: #c6c6c6;
           --ytfs-button: #f8f8f8;
           --ytfs-button-hover: #f0f0f0;
-          --ytfs-youtube-red: #ff0000;
           font-family: Roboto, Arial, sans-serif;
         }
 
@@ -159,23 +158,6 @@
           line-height: 1;
           font-weight: 700;
           letter-spacing: 0;
-        }
-
-        .play-mark {
-          width: 38px;
-          height: 27px;
-          display: grid;
-          place-items: center;
-          border-radius: 8px;
-          background: var(--ytfs-youtube-red);
-          color: #ffffff;
-        }
-
-        .play-mark svg {
-          width: 17px;
-          height: 17px;
-          fill: currentColor;
-          transform: translateX(1px);
         }
 
         .mode {
@@ -388,18 +370,13 @@
           }
         }
       </style>
-      <main class="screen" aria-label="Focused YouTube search">
+      <main class="screen" aria-label="Focused search">
         <section class="panel">
           <header class="identity">
             <h1 class="product">
-              <span class="play-mark" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"></path>
-                </svg>
-              </span>
-              YouTube
+              Focus Search
             </h1>
-            <p class="mode">Focus Search</p>
+            <p class="mode">Search youtube.com</p>
           </header>
           <form>
             <span class="search-icon" aria-hidden="true">
@@ -408,7 +385,7 @@
                 <path d="m20 20-4.4-4.4"></path>
               </svg>
             </span>
-            <input type="search" autocomplete="off" spellcheck="false" placeholder="Search YouTube" aria-label="Search YouTube" />
+            <input type="search" autocomplete="off" spellcheck="false" placeholder="Search" aria-label="Search" />
             <button type="submit" aria-label="Search">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M5 12h14"></path>
